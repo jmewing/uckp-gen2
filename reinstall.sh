@@ -48,7 +48,7 @@ EOF
 apt update
 apt -y upgrade
 apt -y full-upgrade
-apt autoremove
+apt -y autoremove
 lsb_release -a
 
 cat << EOF > /etc/apt/sources.list
@@ -61,7 +61,7 @@ EOF
 apt update
 apt -y upgrade
 apt -y full-upgrade
-apt autoremove
+apt -y autoremove
 
 cat << EOF > /etc/apt/sources.list
 deb http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse
@@ -79,8 +79,22 @@ apt -y autoremove
 
 # This area will halfway break the system.  It cant use usrmerge, cant redo the /bin dir.  apt update shows the system
 # is up2date, but any attempts to install additional software, you get complaints from apt.
-# I will try it again without using the update manager
-# Added to upgrade to 22.04
 
+# Added to upgrade to 22.04
 # apt install update-manager-core
 # do-release-upgrade -d
+
+# I will try it again without using the update manager
+cat << EOF > /etc/apt/sources.list
+deb http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
+deb http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
+deb http://ports.ubuntu.com/ubuntu-ports jammy-backports main restricted universe multiverse
+deb http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
+EOF
+
+lsb_release -a
+apt update
+apt list --upgradable | egrep jammy | cut -d"/" -f1 | egrep -v "^lib"> upgrade.list; for file in `cat upgrade.list`; do echo -en "\n Installing $file \n" $file;apt -y install $file;done
+apt -y upgrade
+apt -y full-upgrade
+apt -y autoremove
