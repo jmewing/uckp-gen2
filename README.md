@@ -4,7 +4,8 @@
 # Once in recovery mode, update the device to version v0.8.6 (UCKP.apq8053.v0.8.6.8cf5792.181017.0942.bin)
 # This allows for more space on the original install/squish.fs locations
 # After updating to v0.8.6, reset to factory, then reboot.
-# scp/sftp/rsync this file to the cloud key.
+# scp/sftp/rsync this file to the cloud key. Default Username/Password is ubnt/ubnt
+
 # I had the file saved as reinstall.sh so:
 # bash ./reinstall.sh
 
@@ -64,3 +65,7 @@ apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
 apt -y install libssh-4 openssh-client openssh-server openssh-sftp-server ssh-import-id lsb-base lsb-release
+
+# Added to upgrade to 22.04
+apt install update-manager-core
+do-release-upgrade -d
