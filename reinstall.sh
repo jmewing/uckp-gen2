@@ -37,6 +37,7 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32 871920
 apt update
 apt -y purge mongodb-clients  mongodb-server  mongodb-server-core  postgresql  postgresql-9.6  postgresql-client  postgresql-common  postgresql-contrib  postgresql-contrib-9.6  ubnt-archive-keyring  ubnt-certgen  ubnt-postgresql-setup  ubnt-unifi-setup  unifi  unifi-management-portal  unifi-protect  unifi-protect-setup
 echo "# xenial" >> /etc/apt/sources.list
+apt -y autoremove
 reboot
 }
 
@@ -113,7 +114,7 @@ apt -y autoremove
 reboot
 }
 
-if [ !-z $state ]; then
+if [ -z $state ]; then
         echo "Latest tested version installed..."
 else
         echo "Starting with $state"
