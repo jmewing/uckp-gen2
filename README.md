@@ -9,3 +9,7 @@
 # After updating to v0.8.6, reset to factory, then reboot.
 # 
 # ssh into your Cloud Key.  Default Username/Password is ubnt/ubnt
+# 
+# wget https://raw.githubusercontent.com/jmewing/uckp-gen2/main/reinstall.sh
+# 
+# bash reinstall.sh
