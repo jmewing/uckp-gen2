@@ -20,7 +20,7 @@ function ctrl_c() {
 }
 
 if [ `head -1 /etc/apt/sources.list | cut -d' ' -f3` == "stretch" ]; then
-  if [ `cat /etc/apt/sources.list | wc -l` <= "4" ]; then
+  if [ `cat /etc/apt/sources.list | wc -l` -lt "5" ]; then
     echo "# debian" >> /etc/apt/sources.list
   fi
 fi
