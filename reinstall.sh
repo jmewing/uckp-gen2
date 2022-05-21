@@ -97,6 +97,24 @@ apt -y install libcrypt1 libcryptsetup12 libhcrypto4-heimdal libgcrypt20 libk5cr
 apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
+#echo "# clean" >> /etc/apt/sources.list
+reboot
+sleep 10
+echo "Press and hold the power button until the system powers off..."
+}
+
+clean () {
+lsb_release -a
+apt update
+apt -y upgrade
+apt -y full-upgrade
+apt -y autoremove
+cat << EOF > /etc/apt/sources.list
+deb http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse
+deb http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse
+deb http://ports.ubuntu.com/ubuntu-ports focal-backports main restricted universe multiverse
+deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse
+EOF
 #echo "# jammy" >> /etc/apt/sources.list
 reboot
 }
