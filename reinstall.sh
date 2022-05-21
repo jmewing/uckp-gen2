@@ -78,7 +78,7 @@ deb http://ports.ubuntu.com/ubuntu-ports focal-backports main restricted univers
 deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse
 EOF
 apt update
-apt list --upgradable | egrep focal | cut -d"/" -f1 | egrep -v "^lib"> upgrade.list; for file in `cat upgrade.list`; do echo -en "\n Installing $file \n" $file;apt -y install $file;done
+apt list --upgradable | egrep "focal" | cut -d"/" -f1 | egrep "crypt"> upgrade.list; for file in `cat upgrade.list`; do echo -en "\n Installing $file \n" $file;apt -y install $file;done
 apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
