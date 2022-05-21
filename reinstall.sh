@@ -31,6 +31,7 @@ if [ `head -1 /etc/apt/sources.list | cut -d' ' -f3` == "stretch" ]; then
   fi
 fi
 
+DEBIAN_FRONTEND=noninteractive
 state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 
 debian () {
