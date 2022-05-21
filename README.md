@@ -67,5 +67,5 @@ apt -y autoremove
 apt -y install libssh-4 openssh-client openssh-server openssh-sftp-server ssh-import-id lsb-base lsb-release
 
 # Added to upgrade to 22.04
-apt install update-manager-core
-do-release-upgrade -d
+# apt install update-manager-core
+# do-release-upgrade -d
