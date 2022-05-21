@@ -8,15 +8,18 @@
 # wget https://raw.githubusercontent.com/jmewing/uckp-gen2/main/reinstall.sh
 # bash reinstall.sh
 
-trap ctrl_c INT
+
 trap cleanup EXIT
 function cleanup {
 	rm -f upgrade.list
 }
+
+trap ctrl_c INT
 function ctrl_c() {
 	rm -f upgrade.list
 	ubnt-systool reset2defaults
 }
+
 lsb_release -a
 tar -zcvf ~/sources.tgz /etc/apt/sources.list.d/
 rm -rfv /etc/apt/sources.list.d/*
@@ -30,6 +33,7 @@ deb http://deb.debian.org/debian/ stretch-updates main contrib non-free
 deb http://deb.debian.org/debian/ stretch-backports main
 deb http://security.debian.org/ stretch/updates main contrib non-free
 EOF
+
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32 871920D1991BC93C 648ACFD622F3D138
 apt update
 apt -y purge mongodb-clients  mongodb-server  mongodb-server-core  postgresql  postgresql-9.6  postgresql-client  postgresql-common  postgresql-contrib  postgresql-contrib-9.6  ubnt-archive-keyring  ubnt-certgen  ubnt-postgresql-setup  ubnt-unifi-setup  unifi  unifi-management-portal  unifi-protect  unifi-protect-setup
@@ -40,6 +44,7 @@ deb http://ports.ubuntu.com/ubuntu-ports xenial-updates main restricted universe
 deb http://ports.ubuntu.com/ubuntu-ports xenial-backports main restricted universe multiverse
 deb http://ports.ubuntu.com/ubuntu-ports xenial-security main restricted universe multiverse
 EOF
+
 apt update
 apt -y upgrade
 apt -y full-upgrade
@@ -57,6 +62,7 @@ apt update
 apt -y upgrade
 apt -y full-upgrade
 apt autoremove
+
 cat << EOF > /etc/apt/sources.list
 deb http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse
 deb http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse
