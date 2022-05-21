@@ -4,10 +4,9 @@
 # Once in recovery mode, update the device to version v0.8.6 (UCKP.apq8053.v0.8.6.8cf5792.181017.0942.bin)
 # This allows for more space on the original install/squish.fs locations
 # After updating to v0.8.6, reset to factory, then reboot.
-# scp/sftp/rsync this file to the cloud key. Default Username/Password is ubnt/ubnt
-
-# I had the file saved as reinstall.sh so:
-# bash ./reinstall.sh
+# Default Username/Password is ubnt/ubnt
+# $curl https://raw.githubusercontent.com/jmewing/uckp-gen2/f44aff1adeeea993c3e4991cbcc11250e50b13da/README.md -o reinstall.sh
+# $bash reinstall.sh
 
 trap ctrl_c INT
 trap cleanup EXIT
