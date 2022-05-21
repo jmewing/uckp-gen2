@@ -43,7 +43,6 @@ apt update
 apt -y purge mongodb-clients  mongodb-server  mongodb-server-core  postgresql  postgresql-9.6  postgresql-client  postgresql-common  postgresql-contrib  postgresql-contrib-9.6  ubnt-archive-keyring  ubnt-certgen  ubnt-postgresql-setup  ubnt-unifi-setup  unifi  unifi-management-portal  unifi-protect  unifi-protect-setup
 echo "# xenial" >> /etc/apt/sources.list
 apt -y autoremove
-reboot
 }
 
 xenial () {
@@ -59,7 +58,6 @@ apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
 echo "# bionic" >> /etc/apt/sources.list
-reboot
 }
 
 bionic () {
@@ -75,7 +73,6 @@ apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
 echo "# focal" >> /etc/apt/sources.list
-reboot
 }
 
 focal () {
@@ -92,7 +89,6 @@ apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
 echo "# jammy" >> /etc/apt/sources.list
-reboot
 }
 
 jammy () {
@@ -116,7 +112,6 @@ apt list --upgradable | egrep jammy | cut -d"/" -f1 | egrep -v "^lib"> upgrade.l
 apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
-reboot
 }
 
 if [ -z $state ]; then
