@@ -19,7 +19,7 @@ function ctrl_c() {
 	ubnt-systool reset2defaults
 }
 
-state="`head -1 /etc/apt/sources.list | cut -d' ' -f3`"
+state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 
 debian () {
 tar -zcvf ~/sources.tgz /etc/apt/sources.list.d/
@@ -35,6 +35,7 @@ EOF
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32 871920D1991BC93C 648ACFD622F3D138
 apt update
 apt -y purge mongodb-clients  mongodb-server  mongodb-server-core  postgresql  postgresql-9.6  postgresql-client  postgresql-common  postgresql-contrib  postgresql-contrib-9.6  ubnt-archive-keyring  ubnt-certgen  ubnt-postgresql-setup  ubnt-unifi-setup  unifi  unifi-management-portal  unifi-protect  unifi-protect-setup
+echo "# xenial" >> /etc/apt/sources.list
 reboot
 }
 
@@ -50,6 +51,7 @@ apt update
 apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
+echo "# bionic" >> /etc/apt/sources.list
 reboot
 }
 
@@ -65,6 +67,7 @@ apt update
 apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
+echo "# focal" >> /etc/apt/sources.list
 reboot
 }
 
@@ -81,6 +84,7 @@ apt list --upgradable | egrep "focal" | cut -d"/" -f1 | egrep "crypt"> upgrade.l
 apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
+echo "# jammy" >> /etc/apt/sources.list
 reboot
 }
 
