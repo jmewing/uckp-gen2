@@ -91,11 +91,11 @@ apt list --upgradable | egrep "focal" | cut -d"/" -f1 | egrep "crypt"> upgrade.l
 apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
-echo "# jammy" >> /etc/apt/sources.list
+#echo "# jammy" >> /etc/apt/sources.list
 reboot
 }
 
-jammy () {
+#jammy () {
 # This area will halfway break the system.  It cant use usrmerge, cant redo the /bin dir.  apt update shows the system
 # is up2date, but any attempts to install additional software, you get complaints from apt.
 
@@ -104,20 +104,20 @@ jammy () {
 # do-release-upgrade -d
 
 # I will try it again without using the update manager
-lsb_release -a
-cat << EOF > /etc/apt/sources.list
-deb http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
-deb http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
-deb http://ports.ubuntu.com/ubuntu-ports jammy-backports main restricted universe multiverse
-deb http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
-EOF
-apt update
-apt list --upgradable | egrep jammy | cut -d"/" -f1 | egrep -v "^lib"> upgrade.list; for file in `cat upgrade.list`; do echo -en "\n Installing $file \n" $file;apt -y install $file;done
-apt -y upgrade
-apt -y full-upgrade
-apt -y autoremove
-reboot
-}
+#lsb_release -a
+#cat << EOF > /etc/apt/sources.list
+#deb http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
+#deb http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
+#deb http://ports.ubuntu.com/ubuntu-ports jammy-backports main restricted universe multiverse
+#deb http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
+#EOF
+#apt update
+#apt list --upgradable | egrep jammy | cut -d"/" -f1 | egrep -v "^lib"> upgrade.list; for file in `cat upgrade.list`; do echo -en "\n Installing $file \n" $file;apt -y install $file;done
+#apt -y upgrade
+#apt -y full-upgrade
+#apt -y autoremove
+#reboot
+#}
 
 if [ -z $state ]; then
         echo "Latest tested version installed..."
