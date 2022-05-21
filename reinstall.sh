@@ -20,7 +20,6 @@ function ctrl_c() {
 }
 
 state="`head -1 /etc/apt/sources.list | cut -d' ' -f3`"
-echo "Starting with $state"
 
 debian () {
 tar -zcvf ~/sources.tgz /etc/apt/sources.list.d/
