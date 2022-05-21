@@ -112,5 +112,9 @@ apt -y autoremove
 reboot
 }
 
-echo "Starting with $state"
-$state
+if [ !-z $state ]; then
+        echo "Latest tested version installed..."
+else
+        echo "Starting with $state"
+        $state
+fi
