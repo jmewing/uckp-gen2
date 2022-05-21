@@ -98,7 +98,7 @@ apt -y install libcrypt1 libcryptsetup12 libhcrypto4-heimdal libgcrypt20 libk5cr
 apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
-#echo "# clean" >> /etc/apt/sources.list
+echo "# clean" >> /etc/apt/sources.list
 reboot
 sleep 10
 echo "Press and hold the power button until the system powers off..."
