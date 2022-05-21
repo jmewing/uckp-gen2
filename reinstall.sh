@@ -19,6 +19,7 @@ function ctrl_c() {
 	ubnt-systool reset2defaults
 }
 
+if [ `head -1 /etc/apt/sources.list | cut -d' ' -f3` == "debian" ] ; then echo "# debian" >> /etc/apt/sources.list; fi
 state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 
 debian () {
