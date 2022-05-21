@@ -5,7 +5,7 @@
 # This allows for more space on the original install/squish.fs locations
 # After updating to v0.8.6, reset to factory, then reboot.
 # Default Username/Password is ubnt/ubnt
-# $curl https://raw.githubusercontent.com/jmewing/uckp-gen2/main/README.md -o reinstall.sh
+# $curl https://raw.githubusercontent.com/jmewing/uckp-gen2/main/reinstall.sh
 # $bash reinstall.sh
 
 trap ctrl_c INT
