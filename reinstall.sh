@@ -40,7 +40,7 @@ deb http://security.debian.org/ stretch/updates main contrib non-free
 EOF
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32 871920D1991BC93C 648ACFD622F3D138
 apt update
-apt -y purge mongodb-clients  mongodb-server  mongodb-server-core  postgresql  postgresql-9.6  postgresql-client  postgresql-common  postgresql-contrib  postgresql-contrib-9.6  ubnt-archive-keyring  ubnt-certgen  ubnt-postgresql-setup  ubnt-unifi-setup  unifi  unifi-management-portal  unifi-protect  unifi-protect-setup
+apt -y purge mongodb-clients  mongodb-server  mongodb-server-core  postgresql  postgresql-9.6  postgresql-client  postgresql-common  postgresql-contrib  postgresql-contrib-9.6  ubnt-archive-keyring  ubnt-certgen  ubnt-postgresql-setup  ubnt-unifi-setup  unifi  unifi-management-portal  unifi-protect  unifi-protect-setup nginx-common nginx-light libnginx-mod-http-echo
 echo "# xenial" >> /etc/apt/sources.list
 apt -y autoremove
 reboot
@@ -87,7 +87,7 @@ deb http://ports.ubuntu.com/ubuntu-ports focal-backports main restricted univers
 deb http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse
 EOF
 apt update
-apt list --upgradable | egrep "focal" | cut -d"/" -f1 | egrep "crypt"> upgrade.list; for file in `cat upgrade.list`; do echo -en "\n Installing $file \n" $file;apt -y install $file;done
+apt -y install libcrypt1 libcryptsetup12 libhcrypto4-heimdal libgcrypt20 libk5crypto3
 apt -y upgrade
 apt -y full-upgrade
 apt -y autoremove
