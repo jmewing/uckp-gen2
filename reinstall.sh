@@ -19,7 +19,12 @@ function ctrl_c() {
 	ubnt-systool reset2defaults
 }
 
-if [ `head -1 /etc/apt/sources.list | cut -d' ' -f3` == "stretch" ] ; then echo "# debian" >> /etc/apt/sources.list; fi
+if [ `head -1 /etc/apt/sources.list | cut -d' ' -f3` == "stretch" ]; then
+  if [ `cat /etc/apt/sources.list | wc -l` <= "4" ]; then
+    echo "# debian" >> /etc/apt/sources.list
+  fi
+fi
+
 state="`tail -1 /etc/apt/sources.list | cut -d' ' -f2 | egrep -v 'http'`"
 
 debian () {
