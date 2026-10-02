@@ -110,3 +110,26 @@ Only attempt the `/usr` merge on a **spare unit with a serial console**, using
 Also note: **Debian 13 was never going to boot** on the stock vendor kernel
 (`3.18.44-ui-qcom`, no **cgroup v2**). A kernel port (msm8953) is the real prerequisite
 for the Debian 13 goal — the `/usr` merge is just one step of many.
+
+---
+
+## 7. Outcome log — 2026-10-01 22:17 CDT (this unit)
+
+**Result: SUCCESS.** After the physical reset / recovery reflash the unit came back on
+the LAN:
+
+- IP **192.168.12.198**, MAC `d0:21:f9:6b:b0:d7`
+- Ports open: **22, 80, 443, 8443** (full OS boot, not bare recovery)
+- `/` → **UniFi OS**, HTTP/2 200 (nginx)
+- `api/system`: `"deviceState":"setup"`, model `UCKP` ("UCK G2 Plus"),
+  UniFi OS **`uckp-3.0.0`**, `cloudConnected:false`, `remoteAccessEnabled:false`,
+  `hasInternet:true`
+- So: **factory-fresh UniFi OS 3.0.0, awaiting setup** — the broken overlay is gone.
+
+**Note on the 1 TB backup volume:** the reset path was *not* verified to preserve
+`/volume/<uuid>/uckp-backup-20261001-2116/`. Treat those images as **suspect until we
+can SSH in and confirm** (needs a configured login). If we still want the dumped
+firmware/partition images, pull the SATA drive and copy them off before reformatting.
+
+**Lesson confirmed:** the `usrmerge` lockout is exactly the kind of failure that needs
+a *physical* path back. `merge-usr.sh` exists so the next attempt doesn't need one.
