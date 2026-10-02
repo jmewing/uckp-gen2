@@ -220,3 +220,36 @@ on this overlay system that step never completed, so the tree was never safe to 
 
 **Corrected tool:** `do-merge.sh` (this repo) — `check` is now diagnostic-only and
 `revert` is a separate, explicit, correctly-ordered command.
+
+---
+
+## 9. ✅ SUCCESS — 2026-10-02 04:14 CDT. merged-/usr achieved and survived reboot.
+
+Ran the corrected `do-merge.sh` on a freshly reset box (root over keyboard-interactive SSH,
+`192.168.12.198`, kernel `3.18.44-ui-qcom`, UniFi OS 3.0.0 / Debian 11 base).
+
+- **merge** — union-copied `/bin`→`/usr/bin`, `/sbin`→`/usr/sbin`, `/lib`→`/usr/lib`.
+  `/usr/bin` went 721 → 836 entries; the linker and libc are now in `/usr/lib`.
+- **verify (gate)** — `RC=0`: `/usr/{bin,sbin,lib}` each a superset; the six make-or-break
+  files present (`/usr/lib/ld-linux-aarch64.so.1`, `aarch64-linux-gnu/{ld-2.31.so,libc-2.31.so}`,
+  `/usr/bin/{sh,ls,busybox}`).
+- **swap** — `busybox rm -rf /X; busybox ln -s usr/X /X` for bin/sbin/lib →
+  `/bin -> usr/bin`, `/sbin -> usr/sbin`, `/lib -> usr/lib`, `/lib64 -> ./lib`.
+- **check (read-only)** — ALL PASSED: exec `/bin/sh`, dynamic shell, `/bin/ls`, `/bin/busybox`,
+  `/usr/bin/{sh,ls}`, `ldd`, linker resolve, libc resolve.
+- **reboot** — came back **merged**: `/bin/sh -> /usr/bin/dash`,
+  `/sbin/init -> /usr/lib/systemd/systemd`,
+  `/lib/ld-linux-aarch64.so.1 -> /usr/lib/aarch64-linux-gnu/ld-2.31.so`; `apt-get check` rc=0.
+
+**This clears the blocker that killed the original `reinstall.sh` jammy stage
+("can't use usrmerge, can't redo the /bin dir").** The copy-before-swap order is what makes
+it safe — the naive `/lib -> usr/lib` first is what bricks it (see §7/§8).
+
+Notes:
+- `dpkg --audit` reports `ck-ui`, `node20`, `node24` missing their md5sums control file — a
+  pre-existing UniFi OS quirk, **not** merge damage.
+- The vendor kernel is unchanged (`3.18.44-ui-qcom`); no cgroup v2. Per the skill's rule, the
+  kernel is **not** the wall for a Debian 12 userland — merged-/usr was, and it is now solved.
+
+**Reproduce:** reset → SSH root → `cp -a /bin/busybox /busybox-static` →
+`bash do-merge.sh merge && bash do-merge.sh verify && bash do-merge.sh swap && bash do-merge.sh check` → reboot.
