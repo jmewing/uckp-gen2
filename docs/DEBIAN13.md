@@ -137,3 +137,38 @@ kernel-port project (see §5).
   images on the 1 TB volume).
 - Ubiquiti factory reset always available: recovery mode → `reset2defaults`.
 - `ctrl_c` in `reinstall.sh` calls `ubnt-systool reset2defaults`.
+
+---
+
+## 7. Attempt log — 2026-10-01 (live test) and the lesson learned
+
+**What worked:**
+- `usrmerge` file-conversion phase **succeeded** — every `/bin`,`/sbin`,`/lib`
+  entry became a symlink into `/usr/...`; `/usr/bin` became a superset.
+  The system stayed fully functional through this.
+
+**Where it broke — and the trap to avoid:**
+- `usrmerge`'s directory swap then failed with `EXDEV` (overlayfs can't rename a
+  lower-layer dir), so `/bin`,`/sbin`,`/lib` remained real directories.
+- To finish it manually, the *correct* overlay method is:
+  1. empty the dir (all entries are already symlinks),
+  2. `rmdir` it (overlayfs creates a whiteout),
+  3. `ln -s usr/<name> <name>`.
+  This **worked for `/bin` and `/sbin`**.
+- ❌ **FATAL MISTAKE:** for `/lib` we ran `find /lib -maxdepth 1 -type l -delete`
+  *before* the swap. That deleted `/lib/ld-linux-aarch64.so.1` — the **dynamic
+  linker** — and, because `/lib` had not yet been turned into a symlink, it was
+  not replaced by the `/usr/lib` version. Result: **no dynamically-linked binary
+  can `exec`** (not even the SSH shell). The device is unreachable except by
+  physical recovery/reset.
+
+**Rule:** when merging `/lib` on a non-merged system, **never delete its
+top-level symlinks first.** Either (a) do the rmdir+symlink swap as a whole on a
+system where `/lib` contents already live in `/usr/lib` (verify
+`/lib/ld-linux-aarch64.so.1` and `/lib/<triplet>/` resolve into `/usr/lib`
+**without** deleting them), or (b) create the `/lib -> usr/lib` symlink by
+replacing the *directory itself* in one step. Keep a static `busybox` on the box
+as a rescue shell before attempting this.
+
+**Recovery:** physical — hold reset 30 s → recovery mode, then either repair the
+`/lib` link on the `overlay` partition (p46) or `reset2defaults`.
