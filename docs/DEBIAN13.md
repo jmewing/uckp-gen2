@@ -172,3 +172,51 @@ as a rescue shell before attempting this.
 
 **Recovery:** physical — hold reset 30 s → recovery mode, then either repair the
 `/lib` link on the `overlay` partition (p46) or `reset2defaults`.
+
+---
+
+## 8. Attempt #2 — 2026-10-01 22:55 CDT (live). The merge WORKED; the *check* broke it.
+
+**Root cause of the first failure, now proven:** the dynamic linker and all of libc
+live **only** in `/lib`, not `/usr/lib`:
+`/lib/ld-linux-aarch64.so.1 -> aarch64-linux-gnu/ld-2.31.so`,
+`/lib/aarch64-linux-gnu/libc-2.31.so`. A naive `/lib -> usr/lib` therefore loses
+the linker *and* libc. `usrmerge`'s "file conversion" is what copies them first —
+on this overlay system that step never completed, so the tree was never safe to swap.
+
+**What worked this time (correct order):**
+1. `do-merge.sh merge` — union-copied `/bin`,`/sbin`,`/lib` into `/usr/...` with
+   `cp -a` (static busybox available as rescue). **Non-destructive.**
+2. `do-merge.sh verify` — proved `/usr` is a **superset** of each dir and that
+   `/usr/lib/ld-linux-aarch64.so.1`, `ld-2.31.so`, `libc-2.31.so`, `/usr/bin/sh`,
+   `/usr/bin/ls`, `/usr/bin/busybox` all exist. **GATE passed.**
+3. `do-merge.sh swap` — `busybox rm -rf /X` + `busybox ln -s usr/X /X` for each of
+   `/bin`,`/sbin`,`/lib`. Result verified live:
+   `ls -ld` → `/bin -> usr/bin`, `/sbin -> usr/sbin`, `/lib -> usr/lib`,
+   `/lib64 -> ./lib`. **This is a successfully merged-/usr system.**
+
+**What broke it — the self-inflicted part:**
+- `check` ran the merged system and **passed the real tests**: `OK exec /bin/sh`,
+  `OK dynamic shell`, `OK /bin/ls`.
+- But it also ran *invalid* probes: `/bin/ls -c` and `/bin/busybox -c` (neither
+  takes `-c`), which returned non-zero → the script **wrongly declared failure and
+  auto-reverted**.
+- The revert used `/usr/bin/mkdir`,`/usr/bin/date` — fine *before* the swap, but the
+  swap had already made `/usr` the live tree, and the revert's ordering was wrong:
+  it removed the `/lib` symlink without first rebuilding the directory, so `/lib`
+  vanished → no process could `exec` → PAM/sshd auth dies (existing daemons keep
+  serving, which is why HTTP/`/api/system` still answered 200).
+
+**Lesson (bake into any future tool):**
+1. **`check` must never mutate.** Diagnostics report; they do not "fix".
+2. **Test with valid invocations** (`/bin/sh -c 'exit 0'`, `/bin/ls /`) — never a
+   flag the tool does not accept; a bogus flag is indistinguishable from a broken lib.
+3. **Revert ordering:** rebuild the real directory from `/usr/X` **first**
+   (`mkdir X.revert; cp -a /usr/X/. X.revert/`), *then* remove the symlink, *then*
+   `mv X.revert X`. Use static busybox for every step — never `/usr/bin/*` while
+   mid-merge.
+4. Once `swap` completes and the live tests pass, **stop** — the system is merged.
+   Reboot to confirm; do not run anything else destructive.
+
+**Corrected tool:** `do-merge.sh` (this repo) — `check` is now diagnostic-only and
+`revert` is a separate, explicit, correctly-ordered command.

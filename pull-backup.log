@@ -1,0 +1,23 @@
+remote=/volume/d8114f6c-3f02-4fe9-8bf5-f4586a6a338e/uckp-backup-20261001-2233
+== pulling gpt-backup.bin (22:37:04)
+   -> 7680 bytes
+== pulling gpt-print.txt (22:37:05)
+   -> 3474 bytes
+== pulling SHA256SUMS (22:37:05)
+   -> 325 bytes
+== pulling p42-boot.img (22:37:06)
+   -> 67108864 bytes
+== pulling p43-recovery.img (22:37:10)
+   -> 67108864 bytes
+== pulling p44-rootfs.img (22:37:13)
+   -> 2147483648 bytes
+== pulling p45-persist.img (22:39:02)
+   -> 1073741824 bytes
+== pulling p46-overlay.img (22:39:38)
+   -> 6442450944 bytes
+== verify (22:42:31)
+p42-boot.img: OK
+p43-recovery.img: OK
+p44-rootfs.img: OK
+p45-persist.img: OK
+== DONE rc=0 (22:42:49)
