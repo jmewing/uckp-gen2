@@ -49,3 +49,17 @@ internal eMMC, PoE-powered, small **160×60 SPI OLED**.
 - `backup.sh` first. Ubiquiti's `reset2defaults` (or recovery mode) is always a
   fallback — it rewrites the eMMC from the firmware image.
 - `reinstall.sh`'s `Ctrl-C` trap runs `ubnt-systool reset2defaults`.
+
+## Debian 13 — VERIFIED WORKING
+
+See **`docs/BUILD-DEBIAN13.md`** — the verified method to build and flash Debian 13
+(trixie) + systemd 257 on the stock 3.18.44 kernel:
+
+```bash
+scripts/make-trixie-image.sh          # build (on x86_64 host)
+scripts/flash-trixie.sh               # flash on the Cloud Key (stock D11 -> D13)
+scripts/verify-trixie.sh              # post-boot health check
+```
+
+Base config (DNS, default password, merged-usr) is documented in `config/base-config.md`.
+Kernel source credit + provenance: `docs/PROVENANCE.md`.
