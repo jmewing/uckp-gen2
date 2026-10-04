@@ -1,0 +1,11 @@
+# Never commit multi-GB images/logs to git — keep them in the archive + release assets.
+card-backup/
+images/
+boot/
+work/
+*.squashfs
+*.img
+*.bin
+*.unf
+*.log
+*.out
