@@ -10,3 +10,6 @@ work/
 *.log
 *.out
 fingerprint/uck-vcio-shim.so
+
+# Local findings/notes containing LAN IPs / MACs — keep out of this PUBLIC repo.
+SA-ON-UCK-FINDINGS.md
