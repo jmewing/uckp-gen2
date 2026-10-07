@@ -5,6 +5,7 @@ boot/
 work/
 *.squashfs
 *.img
+!bootchain/*.img
 *.bin
 *.unf
 *.log

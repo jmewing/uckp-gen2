@@ -1,0 +1,287 @@
+/*
+ * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "msm8953-pinctrl.dtsi"
+#include "msm8953-audio-mtp.dtsi"
+
+/{
+	gpio_keys {
+		compatible = "gpio-keys";
+		input-name = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&gpio_key_pins>;
+
+		reset {
+			label = "reset";
+			gpios = <&tlmm 93 0x1>;
+			linux,input-type = <1>;
+			linux,code = <0x100>;
+			debounce-interval = <15>;
+		};
+	};
+
+
+	batterydata: qcom,battery-data {
+		qcom,batt-id-range-pct = <15>;
+		#include "batterydata-apack-630mah.dtsi"
+	};
+};
+
+
+&spi_3 { /* BLSP1 QUP3 */
+	spi-max-frequency = <16000000>;
+};
+
+&i2c_5 {
+	lp5562@30 {
+		compatible = "ti,lp5562";
+		reg = <0x30>;
+		clock-mode = /bits/8 <2>;
+
+		chan0 {
+			led-cur = /bits/ 8 <0x00>;
+		};
+
+		chan1 {
+			led-cur = /bits/ 8 <0x00>;
+		};
+
+		chan2 {
+			chan-name = "blue";
+			led-cur = /bits/ 8 <0x20>;
+			max-cur = /bits/ 8 <0x60>;
+		};
+
+		chan3 {
+			chan-name = "white";
+			led-cur = /bits/ 8 <0x20>;
+			max-cur = /bits/ 8 <0x60>;
+		};
+	};
+};
+
+&pm8953_l10 {
+	regulator-max-microvolt = <2850000>;
+};
+
+&tlmm {
+	gpio_key_pins: gpio_key_pins {
+		mux {
+			pins = "gpio93";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio93";
+			drive-strength = <2>;
+			bias-pull-up;
+		};
+	};
+	hdd_en_pins: hdd_en_pins {
+		mux {
+			pins = "gpio101";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio101";
+			bias-disable = <0>;
+			drive-strength = <8>;
+			output-high;
+		};
+	};
+	usb_en_pins: usb_en_pins {
+		mux {
+			pins = "gpio102";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio102";
+			bias-disable = <0>;
+			drive-strength = <8>;
+			output-high;
+		};
+	};
+};
+
+&soc {
+	hdd_vbus: regulator@0 {
+		compatible = "regulator-fixed";
+		pinctrl-names = "default";
+		pinctrl-0 = <&hdd_en_pins>;
+
+		regulator-name = "hdd_vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+
+		gpio = <&tlmm 101 0x1>;
+		enable-active-high;
+		regulator-always-on;
+	};
+
+	usb_vbus: regulator@1 {
+		compatible = "regulator-fixed";
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_en_pins>;
+
+		regulator-name = "usb_vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+
+		gpio = <&tlmm 102 0x1>;
+		enable-active-high;
+		regulator-always-on;
+	};
+
+	bat_ext_def {
+		status = "ok";
+		compatible = "gpio-bat-ext";
+		pinctrl-names = "default", "off";
+		pinctrl-0 = <&bat_ext_default>;
+		pinctrl-1 = <&bat_ext_off>;
+		power_off {
+			label = "bat-off";
+			gpios = <&tlmm 104 0x0>;
+		};
+		backup_en {
+			label = "bat-backup-en";
+			gpios = <&tlmm 103 0x0>;
+		};
+
+	};
+};
+
+&pmi_haptic {
+	status = "disabled";
+};
+
+&wled {
+	status = "disabled";
+};
+
+&flash_led {
+	status = "disabled";
+};
+
+&blsp1_uart0 {
+	status = "ok";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart_console_active>;
+};
+
+&mem_client_3_size {
+	qcom,peripheral-size = <0x500000>;
+};
+
+&sdhc_1 {
+	/* device core power supply */
+	vdd-supply = <&pm8953_l8>;
+	qcom,vdd-voltage-level = <2900000 2900000>;
+	qcom,vdd-current-level = <200 570000>;
+
+	/* device communication power supply */
+	vdd-io-supply = <&pm8953_l5>;
+	qcom,vdd-io-always-on;
+	qcom,vdd-io-lpm-sup;
+	qcom,vdd-io-voltage-level = <1800000 1800000>;
+	qcom,vdd-io-current-level = <200 325000>;
+
+	pinctrl-names = "active", "sleep";
+	pinctrl-0 = <&sdc1_clk_on &sdc1_cmd_on &sdc1_data_on  &sdc1_rclk_on>;
+	pinctrl-1 = <&sdc1_clk_off &sdc1_cmd_off &sdc1_data_off &sdc1_rclk_off>;
+
+	qcom,clk-rates = <400000 20000000 25000000 50000000 100000000 192000000
+								384000000>;
+	qcom,nonremovable;
+	qcom,bus-speed-mode = "HS400_1p8v", "HS200_1p8v", "DDR_1p8v";
+
+	status = "ok";
+};
+
+&sdhc_2 {
+	/* device core power supply */
+	vdd-supply = <&pm8953_l11>;
+	qcom,vdd-voltage-level = <2950000 2950000>;
+	qcom,vdd-current-level = <15000 800000>;
+
+	/* device communication power supply */
+	vdd-io-supply = <&pm8953_l12>;
+	qcom,vdd-io-voltage-level = <1800000 2950000>;
+	qcom,vdd-io-current-level = <200 22000>;
+
+	pinctrl-names = "active", "sleep";
+	pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on &sdc2_cd_on>;
+	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off>;
+
+	#address-cells = <0>;
+	interrupt-parent = <&sdhc_2>;
+	interrupts = <0 1 2>;
+	#interrupt-cells = <1>;
+	interrupt-map-mask = <0xffffffff>;
+	interrupt-map = <0 &intc 0 125 0
+		1 &intc 0 221 0
+		2 &tlmm 133 0>;
+	interrupt-names = "hc_irq", "pwr_irq", "status_irq";
+	cd-gpios = <&tlmm 133 0x1>;
+
+	qcom,clk-rates = <400000 20000000 25000000 50000000 100000000
+								200000000>;
+	qcom,bus-speed-mode = "SDR12", "SDR25", "SDR50", "DDR50", "SDR104";
+
+	status = "ok";
+};
+
+&pm8953_typec {
+	ss-mux-supply = <&pm8953_l13>;
+	qcom,ssmux-gpio = <&tlmm 139 GPIO_ACTIVE_HIGH>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&typec_ssmux_config>;
+};
+
+
+&pmi8950_fg {
+       qcom,battery-data = <&batterydata>;
+};
+
+&spmi_bus {
+        qcom,pmi8950@2 {
+                pmi8950_charger: qcom,qpnp-smbcharger {
+                        smbcharger_charger_otg: qcom,smbcharger-boost-otg {
+				status="disabled";
+                        };
+                };
+        };
+};
+
+&pmi8950_charger {
+	qcom,battery-data = <&batterydata>;
+	qcom,external-typec;
+	qcom,bmd-algo-disabled;
+	qcom,typec-psy-name = "typec";
+	status = "okay";
+};
+
+&pm8953_gpios {
+	/* GPIO 2 (NFC_CLK_REQ) */
+	gpio@c100 {
+		qcom,mode = <0>;
+		qcom,output-type = <0>;
+		qcom,pull = <0>;
+		qcom,vin-sel = <2>;
+		qcom,out-strength = <3>;
+		qcom,src-sel = <0>;
+		qcom,master-en = <1>;
+		status = "okay";
+	};
+};
