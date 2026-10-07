@@ -1,0 +1,17 @@
+diff --git a/drivers/clk/qcom/gcc-msm8953.c b/drivers/clk/qcom/gcc-msm8953.c
+index 8f29ecc74..8329858bd 100644
+--- a/drivers/clk/qcom/gcc-msm8953.c
++++ b/drivers/clk/qcom/gcc-msm8953.c
+@@ -3711,6 +3711,12 @@ static struct clk_branch gcc_usb3_pipe_clk = {
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data) {
+ 			.name = "gcc_usb3_pipe_clk",
++			.parent_data = &(const struct clk_parent_data){
++				.fw_name = "usb3_phy_pipe_clk_src",
++				.name = "usb3_phy_pipe_clk_src",
++			},
++			.num_parents = 1,
++			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		}
+ 	}
